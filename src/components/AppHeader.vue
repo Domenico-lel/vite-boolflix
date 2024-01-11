@@ -1,19 +1,22 @@
 <script>
 import AppSearch from "./AppSearch.vue";
+import { store } from "../store";
+
 export default {
     name: "AppHeader",
     components: { AppSearch },
     data() {
-        return {};
+        return {
+            store,
+        };
     },
     methods: {
         testMess(parametro, num) {
             console.log("hey", parametro, num);
         },
+        incrementa() {
+            this.store.counter++;
+        },
     },
 };
 </script>
-<template>
-    <AppSearch message="ciao" @eventodalfiglio="testMess" />
-</template>
-<style scoped></style>
