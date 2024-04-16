@@ -1,43 +1,83 @@
 <script>
-import axios from "axios";
 
-import AppHeader from "./components/AppHeader.vue";
-import AppMain from "./components/AppMain.vue";
-import { store } from "./store";
+// IMPORTO I COMPONENTI
+import AppHeader from './components/AppHeader.vue';
+import AppMain from './components/AppMain.vue';
+
+// IMPORTO AXIOS PER API
+import axios from 'axios';
+
+// IMPORTO STORE.JS
+import { store } from './store';
+
 export default {
-  name: "App",
-  components: { AppHeader, AppMain },
+  components: {
+    AppHeader,
+    AppMain
+  },
+
   data() {
     return {
       store,
-    };
+    }
   },
+
   methods: {
-    handleSearchEvent() {
+    getFilms() {
+      let filmsURL = store.movieURL;
+      if (store.titleFilm !== "") {
+        filmsURL += `&query= ${store.titleFilm}`;
+      }
       axios
-        .get("https://api.themoviedb.org/3/search/movie", {
-          params: {
-            api_key: "0b1d9ed99a9aca1ff9756c3ae887b688",
-            query: this.store.searchText,
-            language: "it-IT",
-          },
+        .get(filmsURL)
+        .then(res => {
+          store.arrayFilms = res.data.results;
+          console.log(store.arrayFilms);
+          store.checkFilm = true;
         })
-        .then((response) => {
-          this.store.movies = response.data.results;
-          console.log(response);
-          this.store.movies = response.data.results;
-        });
+        .catch(error => {
+          console.log("ERRORE CHIAMATA API", error);
+        })
     },
+    
+    getSerie() {
+      console.log("SONO DENTRO SERIE");
+      let filmsURL = store.serieURL;
+      if (store.titleFilm !== "") {
+        filmsURL += `&query= ${store.titleFilm}`;
+      }
+      axios
+        .get(filmsURL)
+        .then(res => {
+          store.arraySerie = res.data.results;
+          console.log(store.arraySerie);
+          store.checkSerie = true;
+        })
+        .catch(error => {
+          console.log("ERRORE CHIAMATA API", error);
+        })
+    },
+
+    getApi(){
+      this.getFilms();
+      this.getSerie();
+    }
   },
-  created() { },
-};
+}
+
 </script>
 
 <template>
-  <AppHeader @performSearch="handleSearchEvent" />
-  <AppMain />
+  <div>
+    <AppHeader @search="getApi" />
+    <AppMain />
+
+  </div>
 </template>
 
 <style lang="scss">
-@use "./styles/main.scss" as *;
+@use 'style/general.scss' as *;
+@use 'style/partials/mixins' as *;
+@use 'style/partials/variable' as *;
+
 </style>
